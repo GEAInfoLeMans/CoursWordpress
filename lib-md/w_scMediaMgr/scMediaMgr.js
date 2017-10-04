@@ -1,9 +1,9 @@
 /**
  * LICENCE[[
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1/CeCILL 2.O
+ * Version: MPL 2.0/GPL 3.0/LGPL 3.0/CeCILL 2.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
+ * 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at http://www.mozilla.org/MPL/
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
@@ -16,16 +16,16 @@
  * The Initial Developer of the Original Code is 
  * nicolas.boyer@kelis.fr
  *
- * Portions created by the Initial Developer are Copyright (C) 2013-2015
+ * Portions created by the Initial Developer are Copyright (C) 2013-2017
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
  * samuel.monsarrat@kelis.fr
  *
  * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * or the CeCILL Licence Version 2.0 (http://www.cecill.info/licences.en.html),
+ * either of the GNU General Public License Version 3.0 or later (the "GPL"),
+ * or the GNU Lesser General Public License Version 3.0 or later (the "LGPL"),
+ * or the CeCILL Licence Version 2.1 (http://www.cecill.info/licences.en.html),
  * in which case the provisions of the GPL, the LGPL or the CeCILL are applicable
  * instead of those above. If you wish to allow use of your version of this file
  * only under the terms of either the GPL, the LGPL or the CeCILL, and not to allow
@@ -45,6 +45,8 @@ var scMediaMgr = {
 	fListeners : {mediaLoaded:[],mediaEnded:[],mediaUpdate:[]},
 	fFlashPlayerPath: scServices.scLoad.resolveDestUri("/lib-md/w_scMediaMgr/player/playerFlv.swf"),
 	fVideoType : /\.(webm|mp4|mp3|ogg|ogv|oga|opus|wav|m4v)$/,
+	fYoutubeVideoIds : {},
+	fProcessYoutubeUrls : null,
 
 	fStrings : ["Montrer les sous-titres","Cacher les sous-titres",
 	/*02*/      "Choisir la langue","Off",
@@ -70,9 +72,10 @@ var scMediaMgr = {
 		try{
 			if (typeof pMediaPath != "undefined") this.fMediaPath = pMediaPath;
 			
-			this.fOpts = (typeof pOpts == "undefined" ? {isSkinInWidget:false,isFlashFallback:false} : pOpts);
+			this.fOpts = (typeof pOpts == "undefined" ? {isSkinInWidget:false,isFlashFallback:false,processYoutubeUrls:false} : pOpts);
 			this.fOpts.isSkinInWidget = (typeof this.fOpts.isSkinInWidget == "undefined" ? false : this.fOpts.isSkinInWidget);
 			this.fOpts.isFlashFallback = (typeof this.fOpts.isFlashFallback == "undefined" ? false : this.fOpts.isFlashFallback);
+			this.fProcessYoutubeUrls = this.fProcessYoutubeUrls != null ? this.fProcessYoutubeUrls : this.fOpts.processYoutubeUrls || false;
 
 			this.fSkinRelPath = this.fOpts.isSkinInWidget?scServices.scLoad.resolveDestUri("/lib-md/w_scMediaMgr"):scServices.scLoad.resolveDestUri("/skin");
 
@@ -88,6 +91,7 @@ var scMediaMgr = {
 				vMedia = {};
 				vMedia.fSrcTabs = [];
 				vMedia.fParent = vMedias[i];
+				vMedia.fId = vMedia.fParent.id || "";
 				vMedia.fIsTranscript = vMedia.fParent.getAttribute('data-alt-istranscript') || "no";
 				vMedia.fTranscript = vMedia.fParent.getAttribute('data-alt-transcript') || "no";
 				vMedia.fTranscriptInfosDoc = vMedia.fParent.getAttribute('data-alt-transcriptinfosdoc');
@@ -109,6 +113,8 @@ var scMediaMgr = {
 
 				this.createMedia(vMedia, vMedia.fType);
 			}
+			// Lance la création vidéos youtube
+			this.xCreateYoutubeVideos();
 
 		} catch(e){scCoLib.log("ERROR - scMediaMgr.init : "+e)}
 	},
@@ -128,9 +134,10 @@ var scMediaMgr = {
 		// C'est une vidéo distante
 		if(!pMedia.fIsDistantUrlTested && vIsDistantUrl){
 			// If youtube video
-			if(vSrc.indexOf('youtu.be') != -1) {
+			if(vSrc.indexOf('youtu.be') != -1 && pMedia.fId!="") {
+				// Créer un objet de vidéos youtube
 				var vYoutubeId = vSrc.substring(vSrc.lastIndexOf('/') + 1);
-				this.xCreateYoutubeVideo(pMedia, vYoutubeId);
+				this.fYoutubeVideoIds[vYoutubeId] = pMedia.fId;
 			} else {
 				pMedia.typeElt = pType;
 				this.xGetScDepotRequest(pMedia, vSrc, pStart); // Test si dépot ou autre url distante
@@ -983,16 +990,37 @@ var scMediaMgr = {
 	},
 
 	/* === Youtube ============================================================ */
-	xCreateYoutubeVideo: function(pMedia, pId) {
-		var vFrameApiScript = document.createElement('script');
-		vFrameApiScript.src = "https://www.youtube.com/iframe_api";
-		vFrameApiScript.type = "text/javascript";
-		pMedia.fParent.parentNode.appendChild(vFrameApiScript, pMedia.fParent);
-		var vFrameScript = document.createElement('script');
-		vFrameScript.type = "text/javascript";
-		pMedia.fParent.parentNode.appendChild(vFrameScript, pMedia.fParent);
-		pMedia.fParent.id = "player";
-		vFrameScript.innerHTML = "var player;function onYouTubeIframeAPIReady() {player = new YT.Player('player', {height: '390',width: '640',videoId: '"+pId+"',events: {'onReady': onPlayerReady}});}function onPlayerReady(event) {/*event.target.playVideo();*/}";
+	xCreateYoutubeVideos: function() {
+		if (this.fProcessYoutubeUrls) {
+			var vFrameScript = document.createElement('script');
+			vFrameScript.type = "text/javascript";
+			document.body.appendChild(vFrameScript);
+			var vFrameScriptCo = "";
+			var vFrameScriptVar = "";
+			for (var i in this.fYoutubeVideoIds) {
+				var vId = this.fYoutubeVideoIds[i];
+				var vYoutubeVideoBk = sc$(vId);
+				var vFrameApiScript = document.createElement('script');
+				vFrameApiScript.src = "https://www.youtube.com/iframe_api";
+				vFrameApiScript.type = "text/javascript";
+				vYoutubeVideoBk.parentNode.appendChild(vFrameApiScript, vYoutubeVideoBk);
+				vFrameScriptVar += "var "+vId+";";
+				vFrameScriptCo += vId+" = new YT.Player('"+vId+"', {height: '390',width: '640',videoId: '"+i+"',events: {'onReady': onPlayerReady}});";
+			}
+			vFrameScript.innerHTML = vFrameScriptVar+"function onYouTubeIframeAPIReady() {"+vFrameScriptCo+"}function onPlayerReady(event) {/*event.target.playVideo();*/}";
+		} else {
+			for (var i in this.fYoutubeVideoIds) {
+				var vYoutubeVideoBk = sc$(this.fYoutubeVideoIds[i]);
+				var vLnkBk = scDynUiMgr.addElement("div", vYoutubeVideoBk.parentNode);
+				var vLnkBkP = scDynUiMgr.addElement("p", vLnkBk, "infoPlayer");
+				vLnkBkP.innerHTML = this.fStrings[32];
+				var vSrc = vYoutubeVideoBk.getAttribute("data-src");
+				var vLnkBkA = this.xAddLnk(vLnkBk, null, vSrc);
+				vLnkBkA.href = vSrc;
+				vLnkBkA.target = "_blank";
+				vYoutubeVideoBk.parentNode.removeChild(vYoutubeVideoBk);
+			}
+		}
 	},
 
 	/* === ScDepot ============================================================ */
@@ -1027,15 +1055,18 @@ var scMediaMgr = {
 		try{
 			var vReq = this.xGetHttpRequest();
 			vReq.open("GET", pSrc + "?V=infoViews.json", true);
-			vReq.withCredentials = true;
+			//vReq.withCredentials = true; // Supprimé pour permettre l'usage de Access-Control-Allow-Origin: * 
 			vReq.onreadystatechange=function() {
 				if (vReq.readyState == 4) {
-					if(vReq.status == 200) {
-						var vJson = scMediaMgr.xDeserialiseObjJs(vReq.responseText);
-						scMediaMgr.xGetScDepotMedia(pMedia, vJson, pSrc, pStart);
+					try{
+						if(vReq.status == 200) {
+							var vJson = scMediaMgr.xDeserialiseObjJs(vReq.responseText);
+							scMediaMgr.xGetScDepotMedia(pMedia, vJson, pSrc, pStart);
+						} else {throw "ERROR"};
+					} catch(e){
+						// Si pas de depot, alors c une ressource distante non youtube et non dépot
+						scMediaMgr.createMedia(pMedia, pMedia.typeElt, pStart);
 					}
-					// Si pas de depot, alors c une ressource distante non youtube et non dépot
-					else scMediaMgr.createMedia(pMedia, pMedia.typeElt, pStart);
 				}
 			}
 			vReq.send(null);	

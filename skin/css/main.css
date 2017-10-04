@@ -121,7 +121,7 @@ code{
 .default .schActive #menu{
 	order:3;
 }
-.default div.schCmds{
+.default .schCmds{
 	order:2;
 	flex: 0 0 auto;
 }
@@ -140,7 +140,7 @@ code{
 	flex-flow: column;
 }
 
-.default #menu > div.mnuSrlUpFra{
+.default #menu > .mnuSrlUpFra{
 	order:1;
 	flex: 0 0 20px;
 }
@@ -152,7 +152,7 @@ code{
 	margin-bottom:0;
 	position:relative; /* Necessaire pour le centrage automatique de l'item de menu courant */
 }
-.default #menu > div.mnuSrlDwnFra{
+.default #menu > .mnuSrlDwnFra{
 	order:3;
 	flex: 0 0 20px;
 }
@@ -276,12 +276,12 @@ code{
 }
 
 
-.default #menu ul{
+.default #menu ul, .default #content ul.plan, .default #content ul.plan ul{
 	list-style-type: none;
 	padding:0 10px;
 	margin:0;
 }
-.default #menu ul.sub{
+.default #menu ul.sub, .default #content ul.plan ul.sub{
 	padding:0 0 0 1em;
 }
 .default #menu .mnu li{
@@ -293,12 +293,12 @@ code{
 .default #menu .sub li:last-child{
 	background: none;
 }
-.default #menu .mnu .lbl{
+.default #menu .mnu .lbl, .default #content ul.plan .lbl{
 	padding:1px 0 1px 22px;
 	min-height:24px;
 	position:relative;
 }
-.default #menu .mnu .quiz .lbl, .default #menu .mnu .coQuiz .lbl{
+.default #menu .mnu .quiz .lbl, .default #menu .mnu .coQuiz .lbl, .default #content ul.plan .quiz .lbl, .default #content ul.plan .coQuiz .lbl{
 	background: url(../img/tpl/menu-bullet-quiz.svg) no-repeat top;
 	background-size: 18px;
 	background-position: 2px 4px;
@@ -321,21 +321,21 @@ code{
 .default #menu .mnu .tgle_o{
 	background-position: 0px -40px;
 }
-.default #menu .mnu a{
+.default #menu .mnu a, .default #content ul.plan a{
 	color:black;
 	text-decoration: none;
 }
-.default #menu .mnu .item {
+.default #menu .mnu .item, .default #content ul.plan .item {
 	display:block;	
 	min-height:22px;
 	padding-top:2px;
 }
-.default #menu .mnu .item span {
+.default #menu .mnu .item span, .default #content ul.plan .item span {
 	display:inline-block;
 	padding: 1px 5px;
 	margin-bottom:3px;
 }
-.default #menu .mnu .sel_yes >.lbl .item span {
+.default #menu .mnu .sel_yes >.lbl .item span, .default #content ul.plan .sel_yes > span {
 	background-color: #434e52;
 	color:white;
 	border-radius:5px;
@@ -520,12 +520,12 @@ code{
 	margin:0 1em;
 }
 #accessibility a{
-	opacity:0.2;
+	opacity:0;
 	color: #e0ecec;
 	text-decoration: none;
 }
 #accessibility:hover a{
-	opacity:0.5;
+	opacity:0.2;
 }
 #accessibility a:focus{
 	opacity:1;
@@ -827,7 +827,7 @@ a.tooltip_a.info{
 	min-width: 20px;
 	min-height: 16px;
 	text-align: right;
-	color: #999;
+	color: #676767;
 	background-color: #f7f7f7;
 	font-size:0.8em;
 }
@@ -865,7 +865,7 @@ a.tooltip_a.info{
 /* === STOP - CodeMirror ==================================================== */
 
 /* === START - scCode ======================================================= */
-div.scCodeActive{
+.scCodeActive{
 	border:1px solid silver;
 	background-color:white;
 }
@@ -879,13 +879,13 @@ div.scCodeActive{
 	position:relative;
 }
 
-div.scCodeActive .CodeMirror-static{
+.scCodeActive .CodeMirror-static{
 	transition: margin-left 200ms ease-in;
 }
-div.scCodeLineNums-invisible .CodeMirror-linenumber{
+.scCodeLineNums-invisible .CodeMirror-linenumber{
 	display:none;
 }
-div.scCodeLineNums-invisible .CodeMirror-static{
+.scCodeLineNums-invisible .CodeMirror-static{
 	margin-left:2px;
 }
 .scCodeRaw-invisible .scCodeRaw,
@@ -923,7 +923,7 @@ div.scCodeLineNums-invisible .CodeMirror-static{
 .scCodeCtrl a.scCodeBtnLineNums{
 	background-position: -0px -20px;
 }
-div.scCodeLineNums-invisible .scCodeCtrl a.scCodeBtnLineNums{
+.scCodeLineNums-invisible .scCodeCtrl a.scCodeBtnLineNums{
 	background-position: -20px -20px;
 }
 .scCodeRaw-visible .scCodeCtrl a.scCodeBtnLineNums{
@@ -998,7 +998,7 @@ div.scCodeLineNums-invisible .scCodeCtrl a.scCodeBtnLineNums{
 	left: -9999px;
 }
 
-div.schPropose a:hover{
+.schPropose a:hover{
 	text-decoration:none;
 }
 .schBtnPropose:hover,
@@ -1041,7 +1041,7 @@ div.schPropose a:hover{
 	font-style: italic;
 	padding:2px 3px;
 }
-div.schProp_no{
+.schProp_no{
 	display:none;
 }
 .schDisplay_off .schResults{
@@ -1305,8 +1305,9 @@ input.schBtnLaunch {
 	background-repeat:no-repeat;	
 	display:block;
 }
-.schPgeBk span.schPgeRank{
-	display:none;
+.schResults span.schPgeRank{
+	position: absolute;
+	left:-10000px;
 }
 .schResults a.schPgeBtn,
 .schResults a.mnu_lnk {
@@ -1314,17 +1315,17 @@ input.schBtnLaunch {
 	display: block;
 	color: #434e52;
 }
-div.schResults li.mnu_sel_yes .schPgeBtn,
-div.schResults div.mnu_sel_yes .mnu_lnk{
+.schResults li.mnu_sel_yes .schPgeBtn,
+.schResults .mnu_sel_yes .mnu_lnk{
 	font-weight: bold;
 	cursor: default;
 }
-div.schResults div.mnu_sch_no a.mnu_lnk{
+.schResults .mnu_sch_no a.mnu_lnk{
 	color:#aaa;
 	cursor:default;
 	text-decoration:none;
 }
-div.schResults div.mnu_sch_no a.mnu_lnk:hover{
+.schResults .mnu_sch_no a.mnu_lnk:hover{
 	text-decoration:none;
 }
 .schResults a.mnu_tgle_o,.schResults a.mnu_tgle_c{
@@ -1340,16 +1341,16 @@ div.schResults div.mnu_sch_no a.mnu_lnk:hover{
 .schResults a.mnu_tgle_o span,.schResults a.mnu_tgle_c span{
 	display:none;
 }
-.schResults div.mnu_sch_yes a.mnu_tgle_c{
+.schResults .mnu_sch_yes a.mnu_tgle_c{
 	background-position: 0px -14px;
 }
-.schResults div.mnu_sch_yes a.mnu_tgle_o{
+.schResults .mnu_sch_yes a.mnu_tgle_o{
 	background-position: 0px -0px;
 }
-.schResults div.mnu_sch_no a.mnu_tgle_c{
+.schResults .mnu_sch_no a.mnu_tgle_c{
 	background-position: 0px -21px; 
 }
-.schResults div.mnu_sch_no a.mnu_tgle_o{
+.schResults .mnu_sch_no a.mnu_tgle_o{
 	background-position: 0px -7px;
 }
 .schResListSrl ul.mnu_root {
@@ -1403,12 +1404,12 @@ a.schParent_tgle_o{
 	text-decoration:none;
 	color: #434e52;
 }
-div.schResults .schPgeBk .schPgeBtn:hover,
-div.schResults .mnu_sch_yes .mnu_lnk:hover {
+.schResults .schPgeBk .schPgeBtn:hover,
+.schResults .mnu_sch_yes .mnu_lnk:hover {
 	color: #434e52;
 	text-decoration: underline;
 }
-div.schResults div.mnu_sel_yes .mnu_lnk:hover{
+.schResults .mnu_sel_yes .mnu_lnk:hover{
 	text-decoration: none;
 }
 .schResCnt,
@@ -1448,9 +1449,6 @@ div.schResults div.mnu_sel_yes .mnu_lnk:hover{
 .tplSchBox{
 	position:relative;
 	z-index: 2;
-}
-div.schResults .schPgeBk span.schPgeRank {
-	display: none;
 }
 /* === STOP - SEARCH ======================================================== */
 
@@ -1531,8 +1529,12 @@ div.schResults .schPgeBk span.schPgeRank {
 }
 .mediaPlayer{
 	display: flex;
-    flex-direction: column;
     position: relative;
+    flex-direction: column;
+    align-items: center;
+}
+iframe.mediaPlayer {
+	margin: auto;
 }
 .player_bk {
 	border: 1px solid black;
@@ -1584,7 +1586,7 @@ object.resAudio {
 	cursor:default;
 	opacity: 0.2;
 }
-div.volume_bk {
+.volume_bk {
 	width: 3.125em;
 	height: 4px;
 	cursor:pointer;
@@ -1595,12 +1597,12 @@ div.volume_bk {
 	box-shadow: inset 0px 4px 4px rgba(0,0,0,.6);
 	position: relative;
 }
-div.volume_value {
+.volume_value {
 	height: 4px;
 	border-radius: 20px;
 	background-color: #cc181e;
 }
-div.seek_progress {
+.seek_progress {
 	width: 13.125em;
 	margin-left: 4px;
 	cursor:pointer;
@@ -1612,7 +1614,7 @@ div.seek_progress {
 	box-shadow: inset 0px 4px 4px rgba(0,0,0,.6);
 	position: relative;
 }
-div.seek_value {
+.seek_value {
 	width: 0;
 	position: absolute;
 	top: 0;
@@ -1620,7 +1622,7 @@ div.seek_value {
 	border-radius: 20px;
 	background-color: #cc181e;
 }
-div.load_progress {
+.load_progress {
 	width: 0;
 	background-color: #fff;
 	height: 8px;
@@ -1694,14 +1696,14 @@ input.volume_btn[type="range"] {
 	top: -3px;
 	height: 10px;
 }
-div.time_bk {
+.time_bk {
 	display:inline-block;
 	color: #E7E7E7;
 	margin-left: 5px;
 	margin-right: 5px;
 	font-size: 0.9em;
 }
-div.transcript{
+.transcript{
 	width: 630px;
 	margin: 5px auto 10px;
 	padding: 5px;
@@ -1930,15 +1932,15 @@ ul.qualityList a.subSelect_on{
   }
 }
 @media (max-width: 650px){ 
-	div.seek_progress {
+	.seek_progress {
 		width: 5.125em;
 	}
-	div.volume_bk {
+	.volume_bk {
 		display: none;
 	}
 }
 @media (max-width: 450px){ 
-	.sepTime_bk, .totalTime_bk, div.volume_bk, div.seek_progress {
+	.sepTime_bk, .totalTime_bk, .volume_bk, .seek_progress {
 		display: none;
 	}	
 }
@@ -1985,9 +1987,6 @@ button:focus,
 }
 .resInFlow_ti .bkBase{
 	margin-top:10px;
-}
-.resInFlow_co {
-    overflow-x: auto;
 }
 .resInFlow_ti .desc{
 	text-align: left;
@@ -2039,6 +2038,17 @@ button:focus,
 .warning_co{
 	background-color:rgba(238,28,37,0.2);
 	background-image: linear-gradient(to right, #D51921 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+.basic{
+	background-image: linear-gradient(0deg, #9F590E 0%, rgba(0, 0, 0, 0) 100%);
+}
+.basic_ti i.type{
+	color:#9F590E;
+}
+.basic_co{
+	background-color:rgba(159, 89, 14, 0.2);
+	background-image: linear-gradient(to right, #9F590E 0%, rgba(0, 0, 0, 0) 100%);
 }
 
 .pBk_ti > span {
@@ -2202,7 +2212,7 @@ button:focus,
 .txt_form_tim img {
 	vertical-align: middle;
 }
-.txt_form_tim div.MathJax_SVG_Display {
+.txt_form_tim .MathJax_SVG_Display {
 	display:inline !important;
 }
 
@@ -2323,14 +2333,14 @@ blockquote.rBk:after{
 	color:#434E52;
 	opacity:0.6;
 }
-div.lnkDoc{
+.lnkDoc{
 	margin: 0 1em 1em;
 }
 i.webInstruct p{
 	margin-bottom: 0;
 }
 i.webInstruct{
-	color:gray;
+	color:676767;
 }
 .txt_auth_tl {
 	font-weight:bold;
@@ -2492,7 +2502,7 @@ a.iBk_closed:hover::before, a.iBk_open::before{
 	display: flex;
 	flex-flow: row;
 	font-style: italic;
-	color:gray;
+	color:676767;
 	margin:0;
 }
 .response_ti > span:nth-child(-n+2){
@@ -2515,18 +2525,18 @@ li.choiceList_ch{
 	display: flex;
 	flex-flow: row;
 }
-div.choiceList_in{
+.choiceList_in{
 	flex: 0 0 auto;
 	width:6em;
 }
-div.choiceList_sol{
+.choiceList_sol{
 	flex: 0 0 auto;
 	width:6em;
 }
-div.choiceList_la{
+.choiceList_la{
 	flex: 1 1 auto;
 }
-div.choiceList_la p{
+.choiceList_la p{
 	margin-top: 0;
 	margin-left: 0;
 }
@@ -2692,32 +2702,17 @@ div.choiceList_la p{
 .cloze p{
 	line-height: 1.6em;
 }
-.gapInput{
-	border: 1px solid #434e52;
-	border-radius:3px;
-	font-size:0.9em;
-}
-.gapInput[disabled]{
-	color: #434e52;
-	background-color: #E0ECEC;
-}
 .gapAnswer{
-	color: green;
-	border: 1px solid red;
 	border-radius: 0px 3px 3px 0px;
 	border-left:0px;
 	background-color: #E0ECEC;
 	padding:2px 4px;
 }
-.assmntResult_0 .gapInput, .assmntResult_0 .exoInput {
-	border-color: red;
+.assmntResult_0 input {
 	color: red;
-	border-radius: 3px 0px 0px 3px;
-	border-right:0px;
 	text-decoration: line-through;
 }
-.assmntResult_1 .gapInput, .assmntResult_1 .exoInput{
-	border-color: green;
+.assmntResult_1 input{
 	color: green;
 }
 
@@ -3219,11 +3214,11 @@ body.sco{
 		margin-bottom:0;
 		background-color: #e0ecec;
 	}
-	.default #menu > div.mnuSrlUpFra {
+	.default #menu > .mnuSrlUpFra {
 		margin-top:5px;
 		flex: 0 0 30px;
 	}
-	.default #menu > div.mnuSrlDwnFra {
+	.default #menu > .mnuSrlDwnFra {
 		flex: 0 0 30px;
 	}
 	.default #menu .mnuSrlUpBtn,

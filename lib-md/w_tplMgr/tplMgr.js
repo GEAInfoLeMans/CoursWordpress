@@ -93,6 +93,19 @@ var tplMgr = {
 				tplMgr.fStore.set("courseUrl", document.location.href);
 			}
 		}
+		// Plan outline
+		var vRetUrl = this.fStore.get("courseUrl");
+		var vMnuItems = scPaLib.findNodes("ide:content/des:ul.plan/des:a");
+		if (vRetUrl && vMnuItems){
+			var vPage = vRetUrl.substring(vRetUrl.lastIndexOf("/")+1);
+			for(var i = 0; i < vMnuItems.length; i++) {
+				var vMnuItem = vMnuItems[i];
+				if(vMnuItem.href.substring(vMnuItem.href.lastIndexOf("/")+1) == vPage){
+					vMnuItem.className = vMnuItem.className + " sel_yes";
+					break;
+				}
+			}
+		}
 	},
 	loadSortKey : "AZ",
 	addZenButton : function(pParent){
@@ -250,9 +263,7 @@ var tplMgr = {
 	},
 	/** Tooltip lib show callback : this = function */
 	sTtShow: function(pNode) {
-		var vClsBtn = scPaLib.findNode("des:a.tooltip_x", scTooltipMgr.fCurrTt);
-		if (vClsBtn) window.setTimeout(function(){vClsBtn.focus();}, pNode.fOpt.DELAY + 10);
-		else if (!pNode.onblur) pNode.onblur = function(){scTooltipMgr.hideTooltip(true);};
+		if (!pNode.fOpt.FOCUS && !pNode.onblur) pNode.onblur = function(){scTooltipMgr.hideTooltip(true);};
 	},
 	/** Tooltip lib hide callback : this = function */
 	sTtHide: function(pNode) {
